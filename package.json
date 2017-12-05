@@ -1,0 +1,23 @@
+{
+  "name": "node-base",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node-dev main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "connect-nedb-session": "^0.0.3",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "express-dot-engine": "^1.0.7",
+    "express-session": "^1.15.6",
+    "formidable": "^1.1.1",
+    "gt3-sdk": "^2.0.0",
+    "moment": "^2.19.2",
+    "nedb": "^1.8.0"
+  }
+}

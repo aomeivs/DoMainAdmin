@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>[[= layout.title ]]</title>
+    <script src="https://cdn.bootcss.com/vue/2.5.3/vue.js"></script>
+    <script src="https://cdn.bootcss.com/iview/2.7.2/iview.min.js"></script>
+    <link href="https://cdn.bootcss.com/iview/2.7.2/styles/iview.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.19.2/moment.min.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.19.2/locale/zh-cn.js"></script>
+</head>
+<body>
+    [[= layout.section ]]
+</body>
+</html>

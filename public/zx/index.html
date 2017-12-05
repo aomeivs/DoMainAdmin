@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdn.bootcss.com/layer/3.0.3/layer.min.js"></script>
+    <link href="https://cdn.bootcss.com/layer/3.0.3/mobile/need/layer.min.css" rel="stylesheet">
+    <script src="js/jquery.limitLong.js"></script>
+    <script src="js/jquery.sendCodeMessage.js"></script>
+
+    <script src="http://static.geetest.com/static/tools/gt.js"></script>
+
+    <script src="../../ie-lte9.js"></script>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+        }
+        input::placeholder{
+            font-size: 18px;
+            height: 66px;
+            line-height: 66px;
+        }
+        .zx-search-mask{
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(0,0,0,0.3);
+        }
+        .zx-search-head{
+            background: #F9F9F9;
+            font-size: 26px;
+            text-align: center;
+            position: relative;
+            height: 72px;
+            line-height: 72px;
+        }
+        .zx-search-close{
+            position: absolute;
+            right: 24px;
+            top: 0px;
+            cursor: pointer;
+        }
+        .zx-search-content{
+            position: absolute;
+            background: #fff;
+            width: 620px;
+            min-height: 460px;
+            left:50%;
+            margin-left: -310px;
+            top: 50%;
+            margin-top: -230px;
+        }
+        .zx-search-body{
+            width: 420px;
+            margin: 0 auto;
+        }
+
+        .form-input{
+            background: #F9F9F9;
+            border: 1px solid #E1E1E1;
+            margin-top: 48px;
+        }
+        .form-input input{
+            border: none;
+            text-indent: 64px;
+            height: 64px;
+            line-height: 64px;
+            outline: none;
+            font-size: 24px;
+        }
+        .form-input input.phone{
+            background:url(images/zx-phone.png) 24px center no-repeat;
+            height: 66px;
+            width: 280px;
+        }
+        .form-input input.validate{
+            background:url(images/zx-code.png) 22px center no-repeat;
+            height: 66px;
+            width: 100%;
+        }
+        #post-code{
+            background: #FFFFFF;
+            border: 1px solid #DADADA;
+            border-radius: 2px;
+            width: 114px;
+            height: 36px;
+            vertical-align: middle;
+            margin-top: -10px;
+        }
+        #btn-search{
+            background: #40BEFF;
+            width: 240px;
+            height: 66px;
+            line-height: 66px;
+            border: none;
+            font-size: 26px;
+            color: #ffffff;
+            margin-top: 48px;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+<div id="captcha" style="margin-top: 20px;"></div>
+<div class="zx-search-mask">
+    <div class="zx-search-content">
+        <div class="zx-search-head">
+            订单查询
+            <div class="zx-search-close"><img src="images/zx-close.png" alt=""></div>
+        </div>
+        <div class="zx-search-body">
+
+            <div class="form-input">
+                <input type="text" class="phone" placeholder="请输入手机号码">
+                <button type="button" id="post-code">
+                    发送验证码
+                </button>
+            </div>
+
+
+            <div class="form-input">
+                <input type="text" class="validate" placeholder="填写验证码">
+            </div>
+
+            <div style="text-align: center">
+                <button type="button" id="btn-search">查询</button>
+            </div>
+            <p id="ppp">ppp</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+
+    $('.phone').limiteLong({num:11})
+
+    $('.validate').limiteLong({num:4})
+
+
+
+    $('#post-code').on('click',function () {
+
+        //        开始G极验证
+
+        console.log('开始ajax....')
+        $(this).sendMessage({count:2})
+
+    })
+
+
+    $.ajax({
+        url: "/gt/register-slide?t=" + (new Date()).getTime(), // 加随机数防止缓存
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+
+            // 调用 initGeetest 进行初始化
+            // 参数1：配置参数
+            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它调用相应的接口
+            initGeetest({
+                // 以下 4 个配置参数为必须，不能缺少
+                gt: data.gt,
+                challenge: data.challenge,
+                offline: !data.success, // 表示用户后台检测极验服务器是否宕机
+                new_captcha: data.new_captcha, // 用于宕机时表示是新验证码的宕机
+
+                product: "bind", // 产品形式，包括：float，popup
+                width: "420"
+                // 更多配置参数说明请参见：http://docs.geetest.com/install/client/web-front/
+            }, handler);
+        }
+    });
+
+    var handler = function (captchaObj) {
+        captchaObj.onReady(function () {
+            $("#wait").hide();
+        }).onSuccess(function () {
+            var result = captchaObj.getValidate();
+            if (!result) {
+                return alert('请完成验证');
+            }
+            $.ajax({
+                url: '/gt/register-slide2',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+//                    username: $('#username2').val(),
+//                    password: $('#password2').val(),
+                    geetest_challenge: result.geetest_challenge,
+                    geetest_validate: result.geetest_validate,
+                    geetest_seccode: result.geetest_seccode
+                },
+                success: function (data) {
+                    if (data.status === 'success') {
+                        setTimeout(function () {
+                            alert('登录成功');
+                        }, 1500);
+                    } else if (data.status === 'fail') {
+                        setTimeout(function () {
+                            alert('登录失败，请完成验证');
+                            captchaObj.reset();
+                        }, 1500);
+                    }
+                }
+            });
+        });
+        $('#post-code').click(function () {
+            // 调用之前先通过前端表单校验
+
+            captchaObj.verify();
+        });
+        // 更多接口说明请参见：http://docs.geetest.com/install/client/web-front/
+    };
+
+
+
+
+
+
+
+
+
+
+    $('#btn-search').on('click',function () {
+        var _p = $('.phone').val()
+        var _v = $('.validate').val()
+//        手机验证
+        if(!_p.length){
+            layer.msg('手机号不能为空')
+            return;
+        }else{
+            if(!/\d{11}/.test(_p)){
+                layer.msg('手机号不正确')
+                return;
+            }
+        }
+//         验证码
+        if(!_v.length){
+            layer.msg('验证码不能为空')
+            return;
+        }else{
+            if(!/\d{4}/.test(_v)){
+                layer.msg('验证码不正确')
+                return;
+            }
+        }
+
+        layer.msg('正在验证跳转...')
+
+    })
+
+//    close win
+
+    $('.zx-search-close').on('click',function () {
+        $('.zx-search-mask').hide()
+    })
+
+
+
+//ie-lte9-placeholder.js
+$(function () {
+        if(!$.placeholderInit({replaceAll:false})){
+            $('[placeholder]').each(function() {
+                var $elem   = $(this)
+                // 文本
+                var word = $elem.attr('placeholder')
+                $elem.placeholder({
+//                        word: word,
+                    diffPaddingLeft:64
+                })
+            })
+
+        }
+})
+
+</script>
+</body>
+</html>

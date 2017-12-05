@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+    <div>
+        <div>Message from partial: [[= partial('partials/hello.dot') ]]</div>
+        <div>
+            Server says: [[= model.fromServer ]]
+        </div>
+      </div>
+      
+      <div>
+          helper property: [[# def.myHelperProperty ]] <br />
+          helper method: [[# def.myHelperMethod('Hello as a parameter') ]] <br />
+          helper in view: [[# def.helperInView ]]
+      </div>
+</body>
+</html>
+[[##def.helperInView:
+Hello from view helper ([[= model.fromServer ]])
+#]]

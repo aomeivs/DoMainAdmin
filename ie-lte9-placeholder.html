@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet">
+</head>
+<body>
+htlm，ie-lte9.js
+<pre>
+<code class="html">
+    除登录、注册以及有“切换卡效果的form表单”页面，
+    其它页面可以直接使用ie-lte9.js替换原ie8.js
+    ---并调用以下方法。
+</code>
+</pre>
+
+javascript，ie-lte9.js
+<pre>
+<code class="javascript">
+    //1.引入ie-lte9.js
+    //2.$.placeholderInit({replaceAll:false} //初始化插件，并根据参数是否执行替换
+    //参数说明：replaceAll 是否替换页面所有input[placeholder]。
+    //当页面支持placeholder时，返回true.
+    //当设置replaceAll:false切页面不支持placeholder时返回false。
+
+    $(function () {
+            if(!$.placeholderInit({replaceAll:false})){
+    //不全部替换，使用自定义逻辑：
+                $('[placeholder]').each(function() {
+                    var $elem   = $(this)
+                    // 文本
+                    var word = $elem.attr('placeholder')
+                    $elem.placeholder({
+    //                        word: word,
+                        diffPaddingLeft:64
+                    })
+                })
+            }
+    })
+</code>
+</pre>
+
+link: <a href="ie-lte9.js">ie-lte9.js</a>
+<br>
+
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

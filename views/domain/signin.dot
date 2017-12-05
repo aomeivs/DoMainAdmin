@@ -1,0 +1,87 @@
+---
+layout: master.dot
+title: signin page
+---
+ 
+[[##section:
+<style>
+.form-div>div{
+    margin-top: 20px;
+}
+</style>
+<div id="app">
+    <card style="width:350px;margin:100px auto;">
+        <p slot="title">
+            <icon type="ios-film-outline"></icon>
+            登录
+        </p>
+        <div class="form-div">
+            <i-form ref="formInline" :model="formInline" :rules="ruleInline">
+                <form-item prop="user">
+                    <i-input placeholder="请输入用户名" type="text" v-model="formInline.user"></i-input>
+                </form-item>
+                <form-item prop="password">
+                    <i-input placeholder="请输入密码" @on-enter="handleSubmit('formInline')" type="password" v-model="formInline.password"></i-input>
+                </form-item>
+                <form-item style="text-align:center; margin-bottom:20px;">
+                    <i-button type="primary" style="width:200px;" @click="handleSubmit('formInline')">提交</i-button>
+                </form-item>
+            </i-form>
+        </div>
+    </card>
+</div>
+<script>
+    var Main ={
+        data(){
+            return {
+                formInline: {
+                    user: '',
+                    password: ''
+                },
+                ruleInline: {
+                    user: [
+                        { required: true, message: '输入用户名', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: '输入密码', trigger: 'blur' },
+                        { type: 'string', min: 6, message: '密码长度不得小于6位', trigger: 'blur' }
+                    ]
+                }
+            }
+        },
+        methods: {
+            handleSubmit(name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        this.$Message.loading({
+                            content: 'Loading...',
+                            duration: 0
+                        })
+
+                    axios.post('/domain/api/signin',{
+                        data:this.formInline
+                    })
+                    .then(function (response) {
+                        if(response.data.msg){
+                            this.$Message.destroy();
+                            this.$Message.error(response.data.msg);
+                        }else{
+                            window.location.href='/domain';
+                        }
+                        
+                    }.bind(this))
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                    } else {
+                        this.$Message.error('验证失败!');
+                    }
+                })
+            }
+        }
+    }
+    var Component = Vue.extend(Main)
+    new Component().$mount('#app')
+</script>
+
+#]]

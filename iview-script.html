@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>iview example</title>
+    <link href="https://cdn.bootcss.com/iview/2.4.0/styles/iview.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/vue/2.4.4/vue.js"></script>
+    <script src="https://cdn.bootcss.com/iview/2.4.0/iview.min.js"></script>
+    <script src="https://cdn.bootcss.com/underscore.js/1.8.3/underscore-min.js"></script>
+    <style>
+    body {
+        font-family: Menlo, Consolas, monospace;
+        color: #444;
+    }
+    .item {
+        cursor: pointer;
+    }
+    .bold {
+        font-weight: bold;
+    }
+    ul {
+        padding-left: 1em;
+        line-height: 1.5em;
+        list-style-type: dot;
+    }
+    .add{
+        display: inline-block;
+        border:1px solid #d9d9d9;
+        padding:1px 8px;
+        border-radius: 2px;
+    }
+    li{
+        margin: 8px 0;
+        padding-left: 16px;
+    }
+</style>
+</head>
+<body>
+<script type="html/x-template" id="tree-item">
+        <li>
+            <div v-if="!tree.root">
+                <span v-on:click="click">{{openValue}}</span> 
+
+                <span v-if="!editStatus" v-on:dblclick="edit">{{tree.title}}</span>
+                <span v-else><input v-model="groupName" /> <span v-on:click="save(tree.id)">保存</span> </span>
+
+                <span v-if="tree.dataList && !tree.root">
+                    <span class="add" v-on:click="add('E')">添加员工</span>
+                    <span class="add" v-on:click="add('G')">添加部门</span>
+                    <span class="add" v-on:click="remove(tree.id)">删除</span>
+                </span>
+            </div> 
+            <ul v-show="open">
+                <tree-item v-bind:tree="tree" v-for="tree in tree.dataList" key="tree.id"></tree-item>
+            </ul>
+        </li>
+</script>
+<div id="app">
+    <ul>
+        <tree-item v-bind:tree='treeData'></tree-item>
+    </ul>
+</div>
+<script>
+    Vue.component('tree-item', {
+        template:'#tree-item',
+        props:['tree'],
+        data:function(){
+            return {
+                // 展开当前树,节点类型
+                open:false,
+                // 添加/编辑，部门
+                groupName:'',
+                tempName:'',
+                // 编辑状态
+                editStatus:false,
+            }
+        },
+        computed:{
+            openValue:function(){
+                return !this.open&&this.tree.dataList?'+':(this.tree.dataList?'-':'.')
+            }
+        },
+        mounted:function(){
+            this.tree.root?this.open=true:this.open
+        },
+        methods: {
+            click:function(){
+               this.open=!this.open 
+            },
+            add:function(type){
+                if(this.tree.dataList){
+                    var isGroup= type=='G'?true:false;
+                    if(isGroup){
+                        var _this = this;
+                        this.$Modal.confirm({
+                            render:function(h){
+                                return h('Input',{
+                                    props:{
+                                        placeholder:'请输入部门名称'
+                                    },
+                                    on:{
+                                        'input':function(val){
+
+                                            _this.groupName = val
+                                        }
+                                    }
+                                })
+                            },
+                            onOk:function(){
+                                if(_this.groupName==''){
+                                    _this.$Message.info('添加失败，内容不能为空！')
+                                    return;  
+                                }
+                                _this.tree.dataList.push({id:_.uniqueId('tree_'),title:_this.groupName,dataList:[]});
+                            },
+                            onCancel:function(){
+
+                            }
+                });
+                        
+                    }else{
+                        var dataLists = _.filter(this.tree.dataList,function(item){
+                            if(item.dataList){
+                                return true;
+                            }
+                        })
+                        var listLength = dataLists.length;
+                        var oListLength = this.tree.dataList.length;
+                        this.tree.dataList.splice(oListLength-listLength,0,{id:_.uniqueId('tree_'),title:'部门的添加需要在新窗口中打开，这里只做演示。'})
+                    }
+                    // 添加部门或员工时打开菜单  
+                    this.open=true;
+                }
+            },
+            edit:function(){
+                if(!this.tree.dataList||this.tree.root) return;
+                this.groupName = this.tree.title;
+                this.tempName = this.tree.title;
+                this.editStatus=!this.editStatus;
+            },
+            remove:function(id){
+                prune(treeData.dataList,id)
+            },
+            // save && delete
+            save:function(id){
+                if(this.groupName===''){
+                    var _this = this;
+                    this.$Modal.confirm({
+                        title: '确认删除？',
+                        content: '<p>确认删除后，部门下成员将一并删除！</p>',
+                        onOk: () => {
+                            this.$Message.info('删除成功');
+                            prune(treeData.dataList,id)
+                        },
+                        onCancel: () => {
+                            _this.tree.title =_this.tempName;
+                            this.$Message.info('取消操作');
+                        }
+                    });
+                }
+                this.tree.title = this.groupName;
+                this.editStatus=false;
+            }
+        }
+    })
+
+    var treeData = 
+    {
+        id:'0',
+        title:'青岛英网资讯股份有限公司',
+        root:true,
+        dataList:[
+            {
+                id:'1',
+                title:'创始人-老总'
+            },
+            {
+                id:'2',
+                title:'技术中心',
+                dataList:[
+                    {
+                        id:'3',
+                        title:'老大-董哥'
+                    }
+                ]
+            }
+        ]
+    }
+
+    // object树删除节点
+    function prune(array, id) {
+        for (var i = 0; i < array.length; ++i) {
+            var obj = array[i];
+            if (obj.id === id) {
+                array.splice(i, 1);
+                return true;
+            }
+            if (obj.dataList) {
+                if (prune(obj.dataList, id)) {
+                    if (obj.dataList.length === 0) {
+                        // delete obj.dataList;
+                        // array.splice(i, 1);
+                    }
+                    return true;
+                }
+            }
+        }
+    }
+    
+
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                treeData:treeData
+            }
+        },
+        mounted:function () {
+
+        },
+        methods: {
+        }
+    })
+</script>
+</body>
+</html>

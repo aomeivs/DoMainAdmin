@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+</head>
+<body>
+<form action="/login" method="post" enctype="multipart/form-data">
+  <table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+      <td>userName</td>
+      <td><input type="text" placeholder="用户名" name="username"></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <input type="file" name="file" placeholder="选择文件">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><button type="submit">提交</button></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <label for="user-check">记住选择</label><input value="check" type="checkbox" id="user-check">
+      </td>
+    </tr>
+  </table>
+</form>
+<script>
+$(function () {
+    $('#user-check').on('click',function () {
+        if($('#user-check:checked').length){
+            console.log($('#user-check:checked').length)
+            $.cookie('user-check',$('#user-check:checked').val())
+        }else{
+            $.cookie('user-check','',{ path:'/',expires: 0 })
+        }
+    })
+})
+</script>
+</body>
+</html>
