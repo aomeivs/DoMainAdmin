@@ -31,6 +31,12 @@ title: domain page
                     <form-item label="过期日期" prop="expireDate">
                         <date-picker @on-change="dataChange('expireDate',selectIndex)" v-model="row.expireDate" type="date" placeholder="expireDate" style="width: 300px"></date-picker>
                     </form-item>
+                    <form-item label="已发送邮件" prop="sendMsg">
+                        <i-input @on-change="dataChange('sendMsg',selectIndex)" v-model="row.sendMsg" placeholder="sendMsg" style="width: 300px"></i-input>
+                    </form-item>
+                    <form-item label="是否过期" prop="isExpired">
+                        <i-input @on-change="dataChange('isExpire',selectIndex)" v-model="row.isExpired" placeholder="isExpired" style="width: 300px"></i-input>
+                    </form-item>
                     <div style="margin-top:20px;">
                         <i-button @click="showEdit(false)" type="ghost">取消</i-button>
                         <i-button @click="save" type="primary" style="margin-left:20px;">保存</i-button>
@@ -49,7 +55,9 @@ title: domain page
                         domain:'',
                         remark:'',
                         createDate:'',
-                        expireDate:''
+                        expireDate:'',
+                        sendMsg:'',
+                        isExpired:''
                     },
                     ruleValidate:{
                         domain:[
@@ -101,6 +109,35 @@ title: domain page
                                     ])
                                 }else{
                                     return moment(params.row.expireDate).format('YYYY-MM-DD')
+                                }
+                            }
+                        },
+                        {
+                            title:'sendMsg',
+                            key:'sendMsg',
+                            render:(h,params)=>{
+                                if(params.row.isExpired!=true){
+                                    if(params.row.sendMsg==1){
+                                    return h('span',{style:'color:red;'},[
+                                       '已发送到30天期邮件'
+                                    ])
+                                }else if(params.row.sendMsg==2){
+                                    return h('span',{style:'color:red;'},[
+                                       '已发送到7天期邮件'
+                                    ])
+                                }else if(params.row.sendMsg==3){
+                                    return h('span',{style:'color:red;'},[
+                                       '已发送到1天期邮件'
+                                    ])
+                                }else{
+                                    return h('span',[
+                                       '暂时不需要通知'
+                                    ])
+                                }
+                                }else{
+                                    return h('span',{style:'color:red;'},[
+                                       '已过期'
+                                    ])
                                 }
                             }
                         }

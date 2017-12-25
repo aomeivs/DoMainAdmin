@@ -59,9 +59,9 @@ module.exports={
     // devtool:'cheap-module-source-map',//'source-map',
     plugins:[
         // new webpack.NamedModulesPlugin(),
-        new webpack.optimize.CommonsChunkPlugin({
+        /* new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor' // 指定公共 bundle 的名字。
-        }),/* 
+        }), 
         new webpack.optimize.CommonsChunkPlugin({
             name: 'manifest',
             chunks: ['app','vendor'] //可不写
@@ -99,6 +99,6 @@ module.exports={
                 }
             }
         }),
-        new WebpackMd5Hash()
+        new WebpackMd5Hash() //解决css从主js文件分离时的hash问题
     ]
 }

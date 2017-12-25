@@ -1,8 +1,25 @@
+var nodemailer  = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var wellknown = require("nodemailer-wellknown");
+var config = wellknown("QQ");
+config.auth = {
+    user:'zhou.lei.qingdao@qq.com',
+    pass:'muiqjruuqqnibfda'
+}
+var mailOptions = {
+    from:"zhou.lei.qingdao<zhou.lei.qingdao@qq.com>",
+    to:"zhou.lei.qingdao@qq.com",
+    subject:"域名过期提醒-zhou.lei.qingdao",
+    text:"text plain",
+    html:"<div>div content</div>"
+};
+var transporter = nodemailer.createTransport(smtpTransport(config));
 var express = require('express');
 var app = express();
 var formidable = require('formidable');
 var domain_path = express.Router();
-
+var moment = require("moment");
+// var Datastore = require('nedb')
 var Datastore = require('nedb')
 , db = {};
 db.domainDB = new Datastore({ filename: process.cwd()+'/datafile/domainDB.db'});
@@ -16,7 +33,58 @@ db.domainDB.loadDatabase();
     // newDocs is an array with these documents, augmented with their _id
     // console.log(newDocs);
 //   });
+// domain_path.use('*',function(req,res,next){
+    
+// })
 
+
+
+// setInterval(function(){    
+    var docs = db['domainDB'].find({isExpired:"false"/* ,sendMsg:0,expireDate:{$lt:expireDate30} */},function(err,docs){
+
+        // send mail with defined transport object
+        if(err || docs.length==0) return;
+            for(let doc of docs){
+                if(moment(doc.expireDate).valueOf()-moment(new Date()).valueOf()>0){
+                    var tempDay = moment(moment(doc.expireDate).valueOf()-moment(new Date()).valueOf()).dayOfYear();
+                    if(tempDay<=30&&tempDay>7&&doc.sendMsg=="0"){
+                        repeatMethod(mailOptions,doc,tempDay);
+                    }else if(tempDay<=7&&tempDay>1&&doc.sendMsg=="1"){
+                        doc.sendMsg="2";
+                        repeatMethod(mailOptions,doc,tempDay);
+                    }else if(tempDay<=1){
+                        doc.sendMsg="3";
+                        repeatMethod(mailOptions,doc,tempDay);
+                    }
+                }else{
+                    doc.isExpired="true";
+                }
+            }
+            
+    })
+    function repeatMethod(mailOptions,doc,tempDay){
+        mailOptions.html=
+                        `
+                        <div>
+                            域名：${JSON.stringify(doc.domain)} ，还有${tempDay}天到期，续费金额${doc.renewFree}
+                        </div>
+                        `
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                return console.log(error);
+            }
+            console.log('Message sent: ' + info.response);
+        }); 
+        update(doc).then(function(num){
+            if(num){
+                console.log('更新成功',doc.domain)
+            }else{
+                console.log('更新失败',doc.domain)
+            }
+            
+        })
+    }
+// },1000*60*60*24)
 // 主页面，使用render、express模板渲染html
 domain_path.get('/',require('./isLogin').checkLogin,function (req,res) {
     
@@ -32,7 +100,7 @@ domain_path.get('/',require('./isLogin').checkLogin,function (req,res) {
     }) */
 
     find({},'domainDB').then(function(data){
-        res.render('domain/index',{array:data,moment: require("moment")})
+        res.render('domain/index',{array:data,moment:moment})
     })
 })
 // 使用api方式获取数据
@@ -75,7 +143,7 @@ domain_path.get('/api/signout',function(req,res,next){
 })
 
 domain_path.get('/api/insertField',function(req,res,next){
-    db['domainDB'].update({},{$set:{renewFree:0}},{multi:true},function(err,num){
+    db['domainDB'].update({},{$set:{sendMsg:"0"}},{multi:true},function(err,num){
         console.log(num);
         next();
     })
@@ -130,6 +198,9 @@ var start = async function () {
 };
 
 // start();
+
+
+
 
 
 module.exports=domain_path;
