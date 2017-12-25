@@ -116,7 +116,7 @@ title: domain page
                             title:'sendMsg',
                             key:'sendMsg',
                             render:(h,params)=>{
-                                if(params.row.isExpired!=true){
+                                if(params.row.isExpired!="true"){
                                     if(params.row.sendMsg==1){
                                     return h('span',{style:'color:red;'},[
                                        '已发送到30天期邮件'

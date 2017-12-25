@@ -38,53 +38,81 @@ db.domainDB.loadDatabase();
 // })
 
 
-
-// setInterval(function(){    
+// 定时器，每24小时跑一次域名到期检测。
+setInterval(function(){    
+    console.log("定时器开始执行----------")
     var docs = db['domainDB'].find({isExpired:"false"/* ,sendMsg:0,expireDate:{$lt:expireDate30} */},function(err,docs){
 
+        var MailList =[];
         // send mail with defined transport object
         if(err || docs.length==0) return;
             for(let doc of docs){
                 if(moment(doc.expireDate).valueOf()-moment(new Date()).valueOf()>0){
                     var tempDay = moment(moment(doc.expireDate).valueOf()-moment(new Date()).valueOf()).dayOfYear();
                     if(tempDay<=30&&tempDay>7&&doc.sendMsg=="0"){
-                        repeatMethod(mailOptions,doc,tempDay);
+                        doc.sendMsg="1";
+                        var temp = {
+                            doc:doc,
+                            tempDay:tempDay
+                        }
+                        MailList.push(temp);
                     }else if(tempDay<=7&&tempDay>1&&doc.sendMsg=="1"){
                         doc.sendMsg="2";
-                        repeatMethod(mailOptions,doc,tempDay);
+                        var temp = {
+                            doc:doc,
+                            tempDay:tempDay
+                        }
+                        MailList.push(temp);
                     }else if(tempDay<=1){
                         doc.sendMsg="3";
-                        repeatMethod(mailOptions,doc,tempDay);
+                        var temp = {
+                            doc:doc,
+                            tempDay:tempDay
+                        }
+                        MailList.push(temp); 
                     }
                 }else{
+                    console.log("已过期的域名：",doc.domain)
                     doc.isExpired="true";
+                    update(doc).then(function(num){
+                        if(num){
+                            console.log('更新成功',doc.domain)
+                        }else{
+                            console.log('更新失败',doc.domain)
+                        }
+                    })
                 }
             }
-            
+                // 发送邮件
+                repeatMethod(MailList);
     })
-    function repeatMethod(mailOptions,doc,tempDay){
-        mailOptions.html=
-                        `
-                        <div>
-                            域名：${JSON.stringify(doc.domain)} ，还有${tempDay}天到期，续费金额${doc.renewFree}
-                        </div>
-                        `
+    function repeatMethod(MailList){
+        mailOptions.html='';
+        for(let item of MailList){
+            mailOptions.html+=
+            `
+            <div>
+                域名：${JSON.stringify(item.doc.domain)} ，还有${item.tempDay}天到期，续费金额${item.doc.renewFree}
+            </div>
+            `
+            update(item.doc).then(function(num){
+                if(num){
+                    console.log('更新成功',item.doc.domain)
+                }else{
+                    console.log('更新失败',item.doc.domain)
+                }
+            })
+        }
+        if(mailOptions.html=='') return;
         transporter.sendMail(mailOptions, function(error, info){
             if(error){
                 return console.log(error);
             }
             console.log('Message sent: ' + info.response);
         }); 
-        update(doc).then(function(num){
-            if(num){
-                console.log('更新成功',doc.domain)
-            }else{
-                console.log('更新失败',doc.domain)
-            }
-            
-        })
     }
-// },1000*60*60*24)
+    console.log("----------定时器开始执行END")
+},1000*60*60*24)
 // 主页面，使用render、express模板渲染html
 domain_path.get('/',require('./isLogin').checkLogin,function (req,res) {
     
