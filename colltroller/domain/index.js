@@ -37,9 +37,7 @@ db.domainDB.loadDatabase();
     
 // })
 
-
-// 定时器，每24小时跑一次域名到期检测。
-setInterval(function(){    
+function findExpiredDomain(){    
     console.log("定时器开始执行----------")
     var docs = db['domainDB'].find({isExpired:"false"/* ,sendMsg:0,expireDate:{$lt:expireDate30} */},function(err,docs){
 
@@ -112,7 +110,11 @@ setInterval(function(){
         }); 
     }
     console.log("----------定时器开始执行END")
-},1000*60*60*24)
+}
+// 启动时，立即检查过期域名；
+findExpiredDomain();
+// 定时器，每24小时跑一次域名到期检测。
+setInterval(findExpiredDomain,1000*60*60*24)
 // 主页面，使用render、express模板渲染html
 domain_path.get('/',require('./isLogin').checkLogin,function (req,res) {
     

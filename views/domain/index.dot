@@ -45,6 +45,7 @@ title: domain page
             </card>
         </div>
     </div>
+    <div id="vue"></div>
     <script>
         var Main = {
             data(){
