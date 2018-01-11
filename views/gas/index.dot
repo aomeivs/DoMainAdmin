@@ -1,0 +1,86 @@
+---
+layout: master.dot
+title: gas page
+---
+ 
+[[##section:
+  
+    <!-- iview api 方式 -->
+    <div id="app">
+        <table style="font-size:12px;border:1px solid #d9d9d9;">
+            <tr>
+                <td>id</td>
+                <td>行政区域</td>
+                <td>加油站</td>
+                <td>地址</td>
+                <td>电话</td>
+                <td>92号优惠</td>
+                <td>95号优惠</td>
+                <td>柴油优惠</td>
+                <td>优惠日期</td>
+            </tr>
+
+            <tr v-for="(item,index) in dataGAS" v-bind:key="index">
+                <td>{{index}}</td>
+                <td>{{item.area}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.add}}</td>
+                <td>{{item.tel}}</td>
+                <td>{{item.discount92}}</td>
+                <td>{{item.discount95}}</td>
+                <td>{{item.discount0}}</td>
+                <td>{{item.date}}</td>
+            </tr>
+        </table>
+
+        <div>
+            <form action="/gas/api/create">
+                <input type="text" v-model="gas.area" placeholder="行政区域" value="">
+                <br>
+                <input type="text" v-model="gas.name" placeholder="加油站" value="">
+                <br>
+                <input type="text" v-model="gas.add" placeholder="地址" value="">
+                <br>
+                <input type="text" v-model="gas.tel" placeholder="电话" value="">
+                <br>
+                <input type="text" v-model="gas.discount92" placeholder="92号优惠" value="">
+                <br>
+                <input type="text" v-model="gas.discount95" placeholder="95号优惠" value="">
+                <br>
+                <input type="text" v-model="gas.discount0" placeholder="柴油优惠" value="">
+                <br>
+                <input type="text" v-on:keyup.enter="submit" v-model="gas.date" placeholder="优惠日期" value="">
+                <br>
+                <button type="button" v-on:click="submit">创建</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        var Main = {
+            data(){
+                return {
+                    gas:{},
+                    dataGAS:[]
+                }
+            },
+            mounted(){
+                /* axios.get('gas/api/find')
+                .then(function (response) {
+                    this.dataGAS=response.data;
+                }.bind(this))
+                .catch(function (error) {
+                    console.log(error);
+                }); */
+            },
+            methods:{
+                submit(){
+                    this.dataGAS.push(this.gas);
+                    this.gas={};
+                }
+            }
+        }
+        var Component = Vue.extend(Main);
+        new Component().$mount('#app')
+    </script> 
+    
+#]]

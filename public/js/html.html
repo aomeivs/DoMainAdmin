@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="jquery.warpdrive.js"></script>
+  <script src="divhover.js"></script>
+  <script>
+      $(function(){
+        // $(".num1").num1();
+        // $(".num2").num2();
+        $(".num3,.num4,.num5").num1();
+        // $(".num4").num4();
+        // $(".num5").num5();
+        // $(".num6").num6();
+        // $(".num7").num7();
+      })
+  </script>
+  <title>Document</title>
+  <style>
+    body{
+        padding: 0;
+        margin: 0;
+    }
+  </style>
+  <style type="text/css">
+    .num{
+      width: 400px;
+      height: 330px;
+      border: 2px solid #ccc;
+      margin: 50px 55px;
+      position: relative;
+      line-height: 230px;
+      text-align: center;
+      display: inline-block;
+      cursor: pointer;
+    }
+    </style>
+</head>
+<body>
+    <!-- https://www.coinbase.com/assets/home/bg-cbd6be93422d1c96fee1b638932bd072f76de72ab6a90996069fbbb4ebc0034b.jpg -->
+    <div style="height: 80px;">
+
+    </div>
+    <div id='holder' style='background:#000;  width:100%; height:470px; position:relative'>
+      
+      <div id='effect' style='position:absolute; width:100%; height:470px'></div>
+      <div style="position:absolute;z-index:999;left:50%;top:100px;margin-left:-90px;">
+        <img src="gm.png" alt="">
+      </div>
+      <div style="position:absolute;z-index:999;text-align:center; color:#fff;font-size:28px; padding-top:20px;width:100%; bottom:80px;">
+        <div>
+            <span style="color:#EF7E00;">光明比特币</span>，点对点数位现金
+        </div>
+        <div style="font-size: 14px; padding-top:20px;">
+            BCH/USD $2857.94 • BCH/EUR €2407.35 • BCH/JPY ¥327026.99 • BCH/CNY ¥19469.45
+        </div>
+      </div>
+    </div>
+  <div style="text-align:center;">
+    <div class="num num3">实名制</div>
+    <div class="num num4">零知识证明</div>
+    <div class="num num5">大区块</div>
+  </div>
+
+</body>
+</html>
