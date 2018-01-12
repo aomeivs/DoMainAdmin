@@ -7,6 +7,9 @@
     <title>[[= layout.title ]]</title>
     <script src="https://cdn.bootcss.com/vue/2.5.3/vue.js"></script>
     <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="https://cdn.bootcss.com/layer/3.0.3/layer.min.js"></script>
 </head>
 <body>
     [[= layout.section ]]
