@@ -1,7 +1,7 @@
 module.exports =  function appRouter(app){
 
     // localhost:port/domain
-    // app.use('/domain',require(process.cwd()+'/colltroller/domain'));
+    app.use('/domain',require(process.cwd()+'/colltroller/domain'));
 
     // io-socket
     // app.use('/io',require(process.cwd()+'/colltroller/io'));

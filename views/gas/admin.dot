@@ -17,7 +17,6 @@ title: gas page
         td{
             border-right: 1px solid #d9d9d9;
             border-bottom: 1px solid #d9d9d9;
-            padding: 12px;
         }
         .footer{
             position:fixed;bottom:0;left:0;right:0;background:#f1f1f1;border-top:1px solid #d1d1d1; padding:15px;
@@ -32,21 +31,18 @@ title: gas page
 
     <div id="app">
         <div class="header">
-            <i-select style="width:150px;" v-model="filters.area" name="" id="" v-on:on-change="filter">
-                <i-option v-for="area in areas" v-bind:value="area.value" v-bind:key="area.value">{{area.label}}</i-option>
-            </i-select>
-
-            <i-select style="width:150px;" v-model="selectedProType" name="" id="" v-on:on-change="filter">
-                <i-option v-for="pro in proType" v-bind:value="pro.key" v-bind:key="pro.key">{{pro.val}}</i-option>
-            </i-select>
-
-            <i-input type="text" v-on:on-enter="filter" v-model="filters.name" placeholder="加油站关键字匹配，如：22" style="width:200px;"></i-input>
-
-            <i-button v-on:click="filter">筛选</i-button>
+            <select v-model="filters.area" name="" id="">
+                <option value="全部行政区域" selected>全部行政区域</option>
+                <option v-for="area in areas" v-bind:value="area.val">{{area.val}}</option>
+            </select>
+            <input type="text" v-on:keyup.enter="filter" v-model="filters.name" placeholder="加油站关键字匹配，如：22">
+            <button type="button" v-on:click="filter">筛选</button>
+            <!-- <button type="button" v-on:click="updateDocFiled">更新数据库结构</button> -->
+            
         </div>
         <table>
             <tr>
-                <td height="40" width="20">NO.</td>
+                <td width="20">NO.</td>
                 <td width="100">行政区域</td>
                 <td width="100">加油站</td>
                 <td width="200">地址</td>
@@ -61,6 +57,7 @@ title: gas page
                     <td width="150">0号优惠</td>
                 </template>
                 <td width="150">优惠日期</td>
+                <td width="100">操作</td>
             </tr>
 
             <tr v-for="(item,index) in dataGAS" v-bind:key="index" v-on:click="readRow(item,$event)">
@@ -81,8 +78,45 @@ title: gas page
                     <td>{{item.product.p0.discount}}</td>
                     <td>{{item.product.p0.date}}</td>
                 </template>
+                <td>
+                    <button type="button" v-on:click="delById(item._id)">删除</button>
+                </td>
             </tr>
         </table>
+
+        <div class="footer">
+            <form action="/gas/api/create">
+                <select name="" v-model="gas.area" id="">
+                    <option v-for="area in areas" v-bind:value="area.val">{{area.val}}</option>
+                </select>
+                <input autofocus tabIndex="1" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.name" placeholder="加油站" value="">
+                <input tabIndex="2" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.add" placeholder="地址" value="">
+                <input tabIndex="3" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.tel" placeholder="电话" value="">
+                <select name="" v-model="selectedProType" id="">
+                    <option v-for="pro in proType" v-bind:value="pro.key">{{pro.val}}</option>
+                </select>
+                <template v-if="selectedProType=='p92'">
+                    <input tabIndex="4" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.product.p92.discount" placeholder="92号优惠" value="">
+                    <input tabIndex="5" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.product.p92.date" placeholder="优惠日期" value="">
+                </template>
+                <template v-if="selectedProType=='p95'">
+                    <input tabIndex="4" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.product.p95.discount" placeholder="95号优惠" value="">
+                    <input tabIndex="5" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.product.p95.date" placeholder="优惠日期" value="">
+                </template>
+                <template v-if="selectedProType=='p0'">
+                    <input tabIndex="4" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.product.p0.discount" placeholder="0号优惠" value="">
+                    <input tabIndex="5" type="text" v-on:keyup.enter="submit(isEdit)" v-model="gas.product.p0.date" placeholder="优惠日期" value="">
+                </template>
+
+                <template v-if="!isEdit">
+                        <button type="button" v-on:click="submit">创建</button>
+                </template>
+                <template v-else>
+                        <button type="button" v-on:click="update">更新</button>
+                        <button type="button" v-on:click="cancelUpdate">取消</button>
+                </template>
+            </form>
+        </div>
     </div>
     <script>
         var Main = {
@@ -108,49 +142,45 @@ title: gas page
                         }
                     },
                     areas:[
-                        {   
-                        value:'全部行政区域',
-                        label:'全部行政区域'
+                       {
+                           key:'市南',
+                           val:'市南'
                        },
                        {
-                        value:'市南',
-                        label:'市南'
+                           key:'市北',
+                           val:'市北'
                        },
                        {
-                        value:'市北',
-                        label:'市北'
+                           key:'黄岛',
+                           val:'黄岛'
                        },
                        {
-                        value:'黄岛',
-                        label:'黄岛'
+                           key:'李沧',
+                           val:'李沧'
                        },
                        {
-                        value:'李沧',
-                        label:'李沧'
+                           key:'崂山',
+                           val:'崂山'
                        },
                        {
-                        value:'崂山',
-                        label:'崂山'
+                           key:'城阳',
+                           val:'城阳'
                        },
                        {
-                        value:'城阳',
-                        label:'城阳'
+                           key:'即墨',
+                           val:'即墨'
                        },
                        {
-                        value:'即墨',
-                        label:'即墨'
+                           key:'平度',
+                           val:'平度'
                        },
                        {
-                        value:'平度',
-                        label:'平度'
+                           key:'莱西',
+                           val:'莱西'
                        },
                        {
-                        value:'莱西',
-                        label:'莱西'
-                       },
-                       {
-                        value:'胶州',
-                        label:'胶州'
+                           key:'胶州',
+                           val:'胶州'
                        }
                     ],
                     selectedProType:'p92',
@@ -163,10 +193,10 @@ title: gas page
                             key:'p95',
                             val:'95号汽油'
                         },
-                        // {
-                        //     key:'p98',
-                        //     val:'98号汽油'
-                        // },
+                        {
+                            key:'p98',
+                            val:'98号汽油'
+                        },
                         {
                             key:'p0',
                             val:'0号柴油'
@@ -184,6 +214,20 @@ title: gas page
                 this.repeatFindAll();
             },
             methods:{
+                updateDocFiled(){
+                    axios.post('/gas/api/updateDocFiled',{dataGAS:this.dataGAS})
+                    .then(function (response) {
+                        console.log(response);
+                        this.repeatFindAll();
+                    }.bind(this))
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                },
+                editStatusClose(){
+                    this.isEdit = false;
+                    this.gas=this.tempGas;
+                },
                 filter(){
                     this.dataGAS = this.cloneDataGAS;
                     let filterList = _.filter(this.dataGAS,(g)=>{
@@ -202,12 +246,30 @@ title: gas page
                         }
                     })
                     this.dataGAS = filterList;
+                    this.editStatusClose();
+                },
+                update(){
+                    axios.post('/gas/api/update',{gas:this.gas})
+                    .then(function (response) {
+                        console.log(response);
+                        layer.msg('更新成功')
+                        // this.repeatFindAll();
+                    }.bind(this))
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                    this.editStatusClose();
+                },
+                cancelUpdate(){
+                    this.editStatusClose();
+                    this.repeatFindAll();
                 },
                 readRow(item,event){
                     this.gas = item;
                     this.isEdit = true;
                     $(event.target.parentElement).css({color:'red'});
-                    $(event.target.parentElement).siblings().css({color:'#495060'});
+                    $(event.target.parentElement).siblings().css({color:'black'});
+                    
                 },
                 submit(isEdit){
                     if(isEdit){
@@ -234,6 +296,18 @@ title: gas page
                     };
                     document.querySelector('input').focus();
                     
+                },
+                delById(_id){
+                    if(confirm()){
+                        axios.get('/gas/api/delete/'+_id)
+                        .then(function (response) {
+                            console.log(response)
+                            this.repeatFindAll();
+                        }.bind(this))
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    }
                 },
                 repeatFindAll(){
                     axios.get('/gas/api/find')

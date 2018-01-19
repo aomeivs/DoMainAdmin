@@ -4,87 +4,65 @@ title: gas page
 ---
  
 [[##section:
-  
-    <style>
-        table{
-            border-collapse: collapse;
-            border-spacing: 0;
-            font-size:12px;border-top:1px solid #d9d9d9;border-left:1px solid #d9d9d9;
-        }
-        tr:first-child td{
-            text-align: center;
-        }
-        td{
-            border-right: 1px solid #d9d9d9;
-            border-bottom: 1px solid #d9d9d9;
-            padding: 12px;
-        }
-        .footer{
-            position:fixed;bottom:0;left:0;right:0;background:#f1f1f1;border-top:1px solid #d1d1d1; padding:15px;
-        }
-        .header{
-            position:fixed;top:0;left:0;right:0;background:#f1f1f1;border-bottom:1px solid #d1d1d1; padding:15px;
-        }
-        #app{
-            padding: 60px 0 ;
-        }
-    </style>
+<style>
+    body,html{
+        height: 100%;
+    }
+</style>
 
-    <div id="app">
-        <div class="header">
-            <i-select style="width:150px;" v-model="filters.area" name="" id="" v-on:on-change="filter">
-                <i-option v-for="area in areas" v-bind:value="area.value" v-bind:key="area.value">{{area.label}}</i-option>
-            </i-select>
-
-            <i-select style="width:150px;" v-model="selectedProType" name="" id="" v-on:on-change="filter">
-                <i-option v-for="pro in proType" v-bind:value="pro.key" v-bind:key="pro.key">{{pro.val}}</i-option>
-            </i-select>
-
-            <i-input type="text" v-on:on-enter="filter" v-model="filters.name" placeholder="加油站关键字匹配，如：22" style="width:200px;"></i-input>
-
-            <i-button v-on:click="filter">筛选</i-button>
-        </div>
-        <table>
-            <tr>
-                <td height="40" width="20">NO.</td>
-                <td width="100">行政区域</td>
-                <td width="100">加油站</td>
-                <td width="200">地址</td>
-                <td width="100">电话</td>
-                <template v-if="selectedProType=='p92'">
-                    <td width="150">92号优惠</td>
-                </template>
-                <template v-if="selectedProType=='p95'">
-                    <td width="150">95号优惠</td>
-                </template>
-                <template v-if="selectedProType=='p0'">
-                    <td width="150">0号优惠</td>
-                </template>
-                <td width="150">优惠日期</td>
-            </tr>
-
-            <tr v-for="(item,index) in dataGAS" v-bind:key="index" v-on:click="readRow(item,$event)">
-                <td>{{index+1}}</td>
-                <td>{{item.area}}</td>
-                <td>{{item.name}}</td>
-                <td>{{item.add}}</td>
-                <td>{{item.tel}}</td>
-                <template v-if="selectedProType=='p92'">
-                    <td>{{item.product.p92.discount}}</td>
-                    <td>{{item.product.p92.date}}</td>
-                </template>
-                <template v-if="selectedProType=='p95'">
-                    <td>{{item.product.p95.discount}}</td>
-                    <td>{{item.product.p95.date}}</td>
-                </template>
-                <template v-if="selectedProType=='p0'">
-                    <td>{{item.product.p0.discount}}</td>
-                    <td>{{item.product.p0.date}}</td>
-                </template>
-            </tr>
-        </table>
+<div id="app" class="weui-tab">
+    <div class="weui-search-bar" id="search_bar">
+        <form class="weui-search-bar__form">
+            <div class="weui-search-bar__box">
+                <i class="weui-icon-search"></i>
+                <input type="search" class="weui-search-bar__input" id="search_input" placeholder="搜索" />
+                <a href="javascript:" class="weui-icon-clear" id="search_clear"></a>
+            </div>
+            <label for="search_input" class="weui-search-bar__label" id="search_text">
+                <i class="weui-icon-search"></i>
+                <span>搜索</span>
+            </label>
+        </form>
+        <a href="javascript:" class="weui-search-bar__cancel-btn" id="search_cancel">取消</a>
     </div>
-    <script>
+    <div class="weui-tab__panel">
+        <div class="weui-cells__title">{{selectedProType}}号汽油优惠</div>
+        <div class="weui-cells">
+            <a v-for="(item,index) in dataGAS" v-bind:key="index" v-on:click="readRow(item,$event)" class="weui-cell weui-cell_access" href="javascript:;">
+                <div class="weui-cell__bd">
+                    <p>{{item.add}}{{item.name}}</p>
+                </div>
+                <template v-if="selectedProType=='p92'">
+                    <div class="weui-cell__ft">{{item.product.p92.discount}}</div>
+                </template>
+                <template v-if="selectedProType=='p95'">
+                    <div class="weui-cell__ft">{{item.product.p95.discount}}</div>
+                </template>
+                <template v-if="selectedProType=='p0'">
+                    <div class="weui-cell__ft">{{item.product.p0.discount}}</div>
+                </template>
+            </a>
+        </div>
+    </div>
+    <div class="weui-tabbar" style="position:fixed;">
+        <a href="javascript:;" v-on:click="tabClick('p92')" class="weui-tabbar__item weui-bar__item_on">
+            <span style="display: inline-block;position: relative;">
+                <img src="/public/images/icon_tabbar.png" alt="" class="weui-tabbar__icon">
+                <span class="weui-badge" style="position: absolute;top: -2px;right: -13px;">8</span>
+            </span>
+            <p class="weui-tabbar__label">#92</p>
+        </a>
+        <a href="javascript:;" v-on:click="tabClick('p95')" class="weui-tabbar__item">
+            <img src="/public/images/icon_tabbar.png" alt="" class="weui-tabbar__icon">
+            <p class="weui-tabbar__label">#95</p>
+        </a>
+        <a href="javascript:;" v-on:click="tabClick('p0')" class="weui-tabbar__item">
+            <img src="/public/images/icon_tabbar.png" alt="" class="weui-tabbar__icon">
+            <p class="weui-tabbar__label">#0</p>
+        </a>
+    </div>
+</div>
+<script>
         var Main = {
             data(){
                 return {
@@ -184,6 +162,9 @@ title: gas page
                 this.repeatFindAll();
             },
             methods:{
+                tabClick(name){
+                    this.selectedProType=name;
+                },
                 filter(){
                     this.dataGAS = this.cloneDataGAS;
                     let filterList = _.filter(this.dataGAS,(g)=>{
@@ -206,8 +187,8 @@ title: gas page
                 readRow(item,event){
                     this.gas = item;
                     this.isEdit = true;
-                    $(event.target.parentElement).css({color:'red'});
-                    $(event.target.parentElement).siblings().css({color:'#495060'});
+                    // $(event.target.parentElement).css({color:'red'});
+                    // $(event.target.parentElement).siblings().css({color:'#495060'});
                 },
                 submit(isEdit){
                     if(isEdit){
@@ -250,5 +231,4 @@ title: gas page
         var Component = Vue.extend(Main);
         new Component().$mount('#app')
     </script> 
-    
 #]]

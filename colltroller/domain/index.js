@@ -61,7 +61,7 @@ function findExpiredDomain(){
                             tempDay:tempDay
                         }
                         MailList.push(temp);
-                    }else if(tempDay<=1){
+                    }else if(tempDay<=1&&doc.sendMsg=="2"){
                         doc.sendMsg="3";
                         var temp = {
                             doc:doc,

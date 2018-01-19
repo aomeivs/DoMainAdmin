@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>[[= layout.title ]]</title>
-    <link href="https://cdn.bootcss.com/iview/2.8.0/styles/iview.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/vue/2.5.3/vue.js"></script>
     <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
-    <script src="https://cdn.bootcss.com/layer/3.0.3/layer.min.js"></script>
-    <script src="https://cdn.bootcss.com/iview/2.8.0/iview.min.js"></script>
 </head>
 <body>
     [[= layout.section ]]
